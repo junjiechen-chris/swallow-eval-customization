@@ -17,4 +17,4 @@ test:
 
 	@echo "If pass@1 is 0.25 then your configuration for standard benchmarks is correct"
 
-all: build test
+all: build 
