@@ -167,3 +167,5 @@ lm_cache/
 results/
 outputs/
 .env
+
+*wandb/

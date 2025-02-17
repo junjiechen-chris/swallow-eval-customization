@@ -297,7 +297,9 @@ class TemplateLM(LM):
             continuation = context[-n_spaces:] + continuation
             context = context[:-n_spaces]
 
-        if self.AUTO_MODEL_CLASS == transformers.AutoModelForCausalLM:
+        # if  self.AUTO_MODEL_CLASS == transformers.AutoModelForCausalLM:
+        #skip AUTO_MODEL_CLASS check if it's not defined
+        if "AUTO_MODEL_CLASS" not in self.__dict__.keys() or self.AUTO_MODEL_CLASS == transformers.AutoModelForCausalLM:
             whole_enc = self.tok_encode(context + continuation)
             context_enc = self.tok_encode(context)
 

@@ -251,6 +251,10 @@ class VLLM(TemplateLM):
     ) -> List[str]:
         res = []
 
+        if len(requests) == 0: # if no requests, return early
+            return []
+        
+
         # batch tokenize contexts
         context, all_gen_kwargs = zip(*(req.args for req in requests))
         context_encoding = self.tokenizer(context, add_special_tokens=False).input_ids

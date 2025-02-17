@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     with io.open(args.metrics_path, mode="r") as ifs:
         metrics = json.load(ifs)
-    metrics["humaneval"]["answer@10"] = answer_ratio
+    metrics["humaneval-unstripped"]["answer@10"] = answer_ratio
 
     with io.open(args.metrics_path, mode="w") as ofs:
         json.dump(metrics, ofs)

@@ -871,6 +871,7 @@ class ConfigurableTask(Task):
         self.dataset = datasets.load_dataset(
             path=self.DATASET_PATH,
             name=self.DATASET_NAME,
+            use_auth_token = True, # TODO: This changes the dataset download behavior
             **dataset_kwargs if dataset_kwargs is not None else {},
         )
 

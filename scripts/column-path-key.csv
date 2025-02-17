@@ -53,6 +53,6 @@ humaneval_answer@10,en/humaneval/metrics.json,humaneval.answer@10,1
 jhumaneval-unstripped@1,ja/humaneval-unstripped/metrics.json,humaneval.pass@1,1
 jhumaneval-unstripped@10,ja/humaneval-unstripped/metrics.json,humaneval.pass@10,1
 jhumaneval-unstripped_answer@10,ja/humaneval-unstripped/metrics.json,humaneval.answer@10,1
-humaneval-unstripped@1,en/humaneval-unstripped/metrics.json,humaneval.pass@1,1
-humaneval-unstripped@10,en/humaneval-unstripped/metrics.json,humaneval.pass@10,1
-humaneval-unstripped_answer@10,en/humaneval-unstripped/metrics.json,humaneval.answer@10,1
+humaneval-unstripped@1,en/humaneval-unstripped/metrics.json,humaneval-unstripped.pass@1,1
+humaneval-unstripped@10,en/humaneval-unstripped/metrics.json,humaneval-unstripped.pass@10,1
+humaneval-unstripped_answer@10,en/humaneval-unstripped/metrics.json,humaneval-unstripped.answer@10,1
