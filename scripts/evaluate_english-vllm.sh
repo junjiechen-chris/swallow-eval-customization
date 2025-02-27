@@ -34,7 +34,6 @@ mkdir -p $BBH_OUTDIR
 
 cd lm-evaluation-harness-en
 
-<<COMMENT
 echo $MMLU_TASK_NAME
 lm_eval --model vllm \
     --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,max_seq_len_to_capture=786 \
@@ -70,8 +69,6 @@ lm_eval --model vllm \
     --use_cache "../$GENERAL_OUTDIR" \
     --log_samples \
     --seed 42 \
-
-COMMENT
 
 # aggregate results
 cd ../
