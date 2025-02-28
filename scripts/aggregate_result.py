@@ -52,9 +52,13 @@ def get_average_score(input_path: str, keys: List[str]) -> float:
     return sum(scores) / len(scores)
 
 
-def aggregate_results(model: str) -> Dict[str, float]:
+def aggregate_results(
+    model: str,
+    result_dir: str,
+    column_path_key_path: str,
+) -> Dict[str, float]:
     """load all results of the model and aggregate the scores into a single dictionary"""
-    column_path_key_csv = pd.read_csv(os.path.join(os.getcwd(), "scripts", "column-path-key.csv"))
+    column_path_key_csv = pd.read_csv(column_path_key_path)
 
     task_keys_map = {
         k: [key.replace("MODEL_NAME", model.replace("/", "_")) for key in v.split(".")]
@@ -63,12 +67,11 @@ def aggregate_results(model: str) -> Dict[str, float]:
 
     results = {}
     overall = []
-    result_root_dir = os.path.join(os.getcwd(), "results", model)
 
     for _, row in column_path_key_csv.iterrows():
         column, path, _, max_score = row
         keys = task_keys_map[column]
-        input_path = os.path.join(result_root_dir, path)
+        input_path = os.path.join(result_dir, path)
 
         # defalut value if the column is empty
         metric = -1.0
@@ -99,14 +102,18 @@ def aggregate_results(model: str) -> Dict[str, float]:
 
     json_result = {
         "model": model,
-        "result": results,
+        "scores": results,
         "overall": ",".join(map(str, overall)),
         "tasks": list(results.keys()),
     }
-
+c_result_dir_is_file = os.path.isfile(result_dir)
+c_result_dir_exists = os.path.isdir(result_dir)
+assert not c_result_dir_is_file, f"outpur dir {c_result_dir_is_file} is a file"
+if not c_result_dir_exists:
+  os.makedirs(c_result_dir_exists)
     json.dump(
         json_result,
-        open(f"{result_root_dir}/aggregated_result.json", "w"),
+        open(f"{result_dir}/result.json", "w"),
         indent=2,
         ensure_ascii=False,
     )
@@ -116,9 +123,28 @@ def aggregate_results(model: str) -> Dict[str, float]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", required=True, type=str, help="Model name to aggregate")
+    parser.add_argument(
+        "--model", required=True, type=str, help="Model name to aggregate"
+    )
+    tmp_args, _ = parser.parse_known_args()
+    parser.add_argument(
+        "--result-dir",
+        type=str,
+        default=os.path.join("results", tmp_args.model),
+        help="Result directory",
+    )
+    parser.add_argument(
+        "--column-path-key-path",
+        type=str,
+        default=os.path.join("results", "column-path-key.csv"),
+        help="Path to column-path-key.csv",
+    )
     args = parser.parse_args()
-    aggregate_results(args.model)
+    aggregate_results(
+        args.model,
+        result_dir=args.result_dir,
+        column_path_key_path=args.column_path_key_path,
+    )
 
 
 if __name__ == "__main__":

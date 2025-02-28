@@ -1,13 +1,13 @@
 #!/bin/bash
 
-source .venv_harness_en/bin/activate
-
 # This script is used to evaluate
 # triviaqa,gsm8k,openbookqa,hellaswag,xwinograd_en,squad2
 # to evaluate with all testcases, set NUM_TESTCASE=None
 
 MODEL_NAME_PATH=$1
 GPU_MEM_PROPORTION=$2
+OUTPUT_DIR=${3:-results/${MODEL_NAME_PATH}}
+
 NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
 echo "ASSIGNED GPU: COUNT $NUM_GPUS; PROPORTION $GPU_MEM_PROPORTION" 
 
@@ -16,17 +16,17 @@ MODEL_ARGS="--model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_G
 GENERAL_TASK_NAME="triviaqa,gsm8k,openbookqa,hellaswag,xwinograd_en,squadv2"
 GENERAL_NUM_FEWSHOT=4
 GENERAL_NUM_TESTCASE="all"
-GENERAL_OUTDIR="results/${MODEL_NAME_PATH}/en/harness_en/alltasks_${GENERAL_NUM_FEWSHOT}shot_${GENERAL_NUM_TESTCASE}cases/general"
+GENERAL_OUTDIR="${OUTPUT_DIR}/en/harness_en/alltasks_${GENERAL_NUM_FEWSHOT}shot_${GENERAL_NUM_TESTCASE}cases/general"
 
 MMLU_TASK_NAME="mmlu"
 MMLU_NUM_FEWSHOT=5
 MMLU_NUM_TESTCASE="all"
-MMLU_OUTDIR="results/${MODEL_NAME_PATH}/en/harness_en/alltasks_${MMLU_NUM_FEWSHOT}shot_${MMLU_NUM_TESTCASE}cases/mmlu"
+MMLU_OUTDIR="${OUTPUT_DIR}/en/harness_en/alltasks_${MMLU_NUM_FEWSHOT}shot_${MMLU_NUM_TESTCASE}cases/mmlu"
 
 BBH_TASK_NAME="bbh_cot_fewshot"
 BBH_NUM_FEWSHOT=3
 BBH_NUM_TESTCASE="all"
-BBH_OUTDIR="results/${MODEL_NAME_PATH}/en/harness_en/alltasks_${BBH_NUM_FEWSHOT}shot_${BBH_NUM_TESTCASE}cases/bbh_cot"
+BBH_OUTDIR="${OUTPUT_DIR}/en/harness_en/alltasks_${BBH_NUM_FEWSHOT}shot_${BBH_NUM_TESTCASE}cases/bbh_cot"
 
 mkdir -p $GENERAL_OUTDIR
 mkdir -p $MMLU_OUTDIR
@@ -72,4 +72,4 @@ lm_eval --model vllm \
 
 # aggregate results
 cd ../
-python scripts/aggregate_result.py --model $MODEL_NAME_PATH
+python scripts/aggregate_result.py --model $MODEL_NAME_PATH --result-dir $OUTPUT_DIR
