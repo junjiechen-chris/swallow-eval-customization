@@ -102,14 +102,14 @@ def aggregate_results(
 
     json_result = {
         "model": model,
-        "result": results,
+        "scores": results,
         "overall": ",".join(map(str, overall)),
         "tasks": list(results.keys()),
     }
 
     json.dump(
         json_result,
-        open(f"{result_dir}/aggregated_result.json", "w"),
+        open(f"{result_dir}/result.json", "w"),
         indent=2,
         ensure_ascii=False,
     )
