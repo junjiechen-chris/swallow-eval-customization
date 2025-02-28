@@ -132,7 +132,7 @@ def main():
     parser.add_argument(
         "--column-path-key-path",
         type=str,
-        default="scripts/column-path-key.csv",
+        default=os.path.join("results", "column-path-key.csv"),
         help="Path to column-path-key.csv",
     )
     args = parser.parse_args()
