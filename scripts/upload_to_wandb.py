@@ -49,7 +49,7 @@ radar_df = pd.DataFrame({
 wandb_log(wandb, radar_df, "radar_table")
 
 # %%
-model_cmp_df = pd.DataFrame({"model": results["model"]}| {k: v for k, v in  results["result"].items() if v!=-1}, index=[0])
+model_cmp_df = pd.DataFrame({"model": results["model"]}| {k: v for k, v in  results["scores"].items() if v!=-1}, index=[0])
 wandb_log(wandb, model_cmp_df, "model_comparison_table")
 
 # %%
