@@ -106,7 +106,11 @@ def aggregate_results(
         "overall": ",".join(map(str, overall)),
         "tasks": list(results.keys()),
     }
-
+c_result_dir_is_file = os.path.isfile(result_dir)
+c_result_dir_exists = os.path.isdir(result_dir)
+assert not c_result_dir_is_file, f"outpur dir {c_result_dir_is_file} is a file"
+if not c_result_dir_exists:
+  os.makedirs(c_result_dir_exists)
     json.dump(
         json_result,
         open(f"{result_dir}/result.json", "w"),
