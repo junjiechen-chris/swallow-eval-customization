@@ -54,8 +54,8 @@ def get_average_score(input_path: str, keys: List[str]) -> float:
 
 def aggregate_results(
     model: str,
-    result_dir: str = None,
-    column_path_key_path: str = "scripts/column-path-key.csv",
+    result_dir: str,
+    column_path_key_path: str,
 ) -> Dict[str, float]:
     """load all results of the model and aggregate the scores into a single dictionary"""
     column_path_key_csv = pd.read_csv(column_path_key_path)
