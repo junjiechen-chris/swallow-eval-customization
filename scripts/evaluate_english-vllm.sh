@@ -8,6 +8,9 @@ MODEL_NAME_PATH=$1
 GPU_MEM_PROPORTION=$2
 OUTPUT_DIR=${3:-results/${MODEL_NAME_PATH}}
 
+# Convert OUTPUT_DIR to an absolute path
+OUTPUT_DIR=$(realpath $OUTPUT_DIR)
+
 NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
 echo "ASSIGNED GPU: COUNT $NUM_GPUS; PROPORTION $GPU_MEM_PROPORTION" 
 
@@ -42,8 +45,8 @@ lm_eval --model vllm \
     --batch_size 16 \
     --device cuda \
     --write_out \
-    --output_path "../$MMLU_OUTDIR" \
-    --use_cache "../$MMLU_OUTDIR" \
+    --output_path "$MMLU_OUTDIR" \
+    --use_cache "$MMLU_OUTDIR" \
     --seed 42 \
 
 lm_eval --model vllm \
@@ -53,8 +56,8 @@ lm_eval --model vllm \
     --batch_size 16 \
     --device cuda \
     --write_out \
-    --output_path "../$BBH_OUTDIR" \
-    --use_cache "../$BBH_OUTDIR" \
+    --output_path "$BBH_OUTDIR" \
+    --use_cache "$BBH_OUTDIR" \
     --log_samples \
     --seed 42 \
 
@@ -65,8 +68,8 @@ lm_eval --model vllm \
     --batch_size 16 \
     --device cuda \
     --write_out \
-    --output_path "../$GENERAL_OUTDIR" \
-    --use_cache "../$GENERAL_OUTDIR" \
+    --output_path "$GENERAL_OUTDIR" \
+    --use_cache "$GENERAL_OUTDIR" \
     --log_samples \
     --seed 42 \
 
