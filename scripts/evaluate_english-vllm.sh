@@ -7,6 +7,10 @@
 MODEL_NAME_PATH=$1
 GPU_MEM_PROPORTION=$2
 OUTPUT_DIR=${3:-results/${MODEL_NAME_PATH}}
+TARGETED_TP_SIZE=$4
+TARGETED_DP_SIZE=$5
+#echo "GPU CONFIG:" $GPU_MEM_PROPORTION, $TARGETED_DP_SIZE, $TARGETED_TP_SIZE
+#exit
 
 # Convert OUTPUT_DIR to an absolute path
 OUTPUT_DIR=$(realpath $OUTPUT_DIR)
@@ -14,7 +18,7 @@ OUTPUT_DIR=$(realpath $OUTPUT_DIR)
 NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
 echo "ASSIGNED GPU: COUNT $NUM_GPUS; PROPORTION $GPU_MEM_PROPORTION" 
 
-MODEL_ARGS="--model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,max_seq_len_to_capture=786"
+MODEL_ARGS="--model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE"
 
 GENERAL_TASK_NAME="triviaqa,gsm8k,openbookqa,hellaswag,xwinograd_en,squadv2"
 GENERAL_NUM_FEWSHOT=4
@@ -39,7 +43,7 @@ cd lm-evaluation-harness-en
 
 echo $MMLU_TASK_NAME
 lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,max_seq_len_to_capture=786 \
+    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
     --tasks $MMLU_TASK_NAME \
     --num_fewshot $MMLU_NUM_FEWSHOT \
     --batch_size 16 \
@@ -50,7 +54,7 @@ lm_eval --model vllm \
     --seed 42 \
 
 lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,max_seq_len_to_capture=786 \
+    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
     --tasks $BBH_TASK_NAME \
     --num_fewshot $BBH_NUM_FEWSHOT \
     --batch_size 16 \
@@ -62,7 +66,7 @@ lm_eval --model vllm \
     --seed 42 \
 
 lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,max_seq_len_to_capture=786 \
+    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
     --tasks $GENERAL_TASK_NAME \
     --num_fewshot $GENERAL_NUM_FEWSHOT \
     --batch_size 16 \
