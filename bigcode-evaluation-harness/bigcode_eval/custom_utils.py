@@ -45,6 +45,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Calculates answer ratio of (J)HumanEval task using generated outputs.")
     parser.add_argument("--generation_path", required=True, type=str, help="Path to the `generation_(j)humaneval.json` file.")
     parser.add_argument("--metrics_path", required=True, type=str, help="Path to the `metrics.json` file.")
+    parser.add_argument("--task", required=False, type=str, default="humaneval", help="Task name. humaneval or mbpp.")
     args = parser.parse_args()
 
     with io.open(args.generation_path, mode="r") as ifs:

@@ -169,3 +169,5 @@ outputs/
 .env
 
 *wandb/
+evaluation-harness_latest.sif
+scripts/tsubame/environment/logs
