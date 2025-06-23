@@ -16,9 +16,7 @@ TARGETED_DP_SIZE=$5
 OUTPUT_DIR=$(realpath $OUTPUT_DIR)
 
 NUM_GPUS=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
-# TODO: force NUM_GPU to 1 since it's a shared machine 
-NUM_GPUS=1
-echo "ASSIGNED GPU: COUNT $NUM_GPUS; PROPORTION $GPU_MEM_PROPORTION" 
+echo "ASSIGNED GPU: COUNT $NUM_GPUS; PROPORTION $GPU_MEM_PROPORTION; TARGETED TP SIZE: $TARGETED_TP_SIZE; TARGETED DP SIZE: $TARGETED_DP_SIZE" 
 
 MODEL_ARGS="--model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$NUM_GPUS,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE"
 
@@ -74,8 +72,7 @@ OUTDIRS=($GENERAL_OUTDIR $MMLU_OUTDIR $BBH_OUTDIR $GPQA_OUTDIR $MATH_OUTDIR)
 
 pushd lm-evaluation-harness-en
 
-# for i in "${!TASK_NAME[@]}"; do
-for i in $(seq 1 2); do
+for i in "${!TASK_NAME[@]}"; do
     echo "Starting evaluation for: ${LABELS[$i]}"
     echo "Tasks: ${TASK_NAME[$i]}"
     echo "Output directory: ${OUTDIRS[$i]}"
@@ -93,47 +90,8 @@ for i in $(seq 1 2); do
         --log_samples \
         --seed 42
 done
+popd
+python scripts/aggregate_result.py --model $MODEL_NAME_PATH --result-dir $OUTPUT_DIR
 echo "All evaluations are done."
 exit 0
 
-
-echo $MMLU_TASK_NAME
-lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
-    --tasks $MMLU_TASK_NAME \
-    --num_fewshot $MMLU_NUM_FEWSHOT \
-    --batch_size 16 \
-    --device cuda \
-    --write_out \
-    --output_path "$MMLU_OUTDIR" \
-    --use_cache "$MMLU_OUTDIR" \
-    --seed 42 \
-
-lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
-    --tasks $BBH_TASK_NAME \
-    --num_fewshot $BBH_NUM_FEWSHOT \
-    --batch_size 16 \
-    --device cuda \
-    --write_out \
-    --output_path "$BBH_OUTDIR" \
-    --use_cache "$BBH_OUTDIR" \
-    --log_samples \
-    --seed 42 \
-
-lm_eval --model vllm \
-    --model_args pretrained=$MODEL_NAME_PATH,tensor_parallel_size=$TARGETED_TP_SIZE,dtype=auto,gpu_memory_utilization=$GPU_MEM_PROPORTION,data_parallel_size=$TARGETED_DP_SIZE \
-    --tasks $GENERAL_TASK_NAME \
-    --num_fewshot $GENERAL_NUM_FEWSHOT \
-    --batch_size 16 \
-    --device cuda \
-    --write_out \
-    --output_path "$GENERAL_OUTDIR" \
-    --use_cache "$GENERAL_OUTDIR" \
-    --log_samples \
-    --seed 42 \
-
-# aggregate results
-# cd ../
-popd
-python scripts/aggregate_result.py --model $MODEL_NAME_PATH --result-dir $OUTPUT_DIR
